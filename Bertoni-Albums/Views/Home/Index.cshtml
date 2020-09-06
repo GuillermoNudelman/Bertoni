@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                url: 'https://jsonplaceholder.typicode.com/albums',
+                type: "GET",
+                dataType: 'json',
+                success: function (data) {
+                    var s = '';
+                    for (var i = 0; i < data.length; i++) {
+                        s += '<option value="' + data[i].id + '">' + data[i].title + '</option>';
+                    }
+                    $("#AlbumSelection").html(s);
+                }
+            });
+        });
+
+        function ViewAlbum() {
+            var albumSelection = $("#AlbumSelection").val();
+            var urlSelected = "https://jsonplaceholder.typicode.com/photos?albumId=" + albumSelection;
+            $.ajax({
+                url: urlSelected,
+                type: "GET",
+                dataType: 'json',
+                success: function (data) {
+                    var s = '';
+                    for (var i = 0; i < data.length; i++) {
+                        s += "<tr>";
+                        s += '<td>';
+                        s += '<label>' + data[i].title + '</label>';
+                        s += '</td>';
+                        s += '<td>';
+                        s += '<img src="' + data[i].thumbnailUrl + '" >';
+                        s += '</td>';
+                        s += '<td>';
+                        s += '<button onclick="ViewComments(' + data[i].id + ')">Ver comentarios</button>';
+                        s += '</td>';
+                        s += "</tr>";
+                    }
+                    $("#photosAlbum").html(s);
+                }
+            });
+        }
+
+        function ViewComments(photoSelected) {
+            var urlSelected = "https://jsonplaceholder.typicode.com/comments?postId=" + photoSelected;
+            $.ajax({
+                url: urlSelected,
+                type: "GET",
+                dataType: 'json',
+                success: function (data) {
+                    var s = '';
+                    for (var i = 0; i < data.length; i++) {
+                        s += "<li>" + data[i].body + "</li>";
+                    }
+                    $("#commentsList").html(s);
+                }
+            });
+        }
+    </script>
+}
+<div class="jumbotron">
+    <h3>Select an album</h3>
+    <select id="AlbumSelection">
+    </select>
+    <button onclick="ViewAlbum()">Visualizar álbum</button>
+    <table id="photosAlbum">
+    </table>
+    <ul id="commentsList">
+    </ul>
+</div>
